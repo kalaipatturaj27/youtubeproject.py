@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[1]:
-
 # import tools
 
 from googleapiclient.discovery import build  #built function used to create a client object ,Simplifies Authentication
@@ -11,10 +8,7 @@ import psycopg2
 import pymongo
 import streamlit as st
 
-
-# In[2]:
 #api key get
-
 # youtube = googleapiclient.discovery.build(
         #api_service_name, api_version, credentials=credentials)
 def api_connect():
@@ -28,11 +22,7 @@ def api_connect():
 youtube =api_connect()
 
 
-# In[3]:
-
-
 #to get chanel information
-
 
 def channel_info(channel_id):
 
@@ -50,10 +40,6 @@ def channel_info(channel_id):
                     channel_description=i['snippet']['description'],
                     playlist_id = i['contentDetails']['relatedPlaylists']['uploads'])
     return data
-
-
-
-# In[4]:
 
 
 # to get videosid details
@@ -81,10 +67,6 @@ def videoid_details(channel_id):
             break
             
     return videos_id
-
-
-# In[5]:
-
 
 #get video details:
 
@@ -115,9 +97,6 @@ def video_details(video_Id):
    
 
 
-# In[6]:
-
-
 #get comment details
 def comment_info(video_Id):
     comment_data = []
@@ -138,9 +117,6 @@ def comment_info(video_Id):
         pass
     
     return comment_data
-
-
-# In[7]:
 
 
 #get playlist info
@@ -173,8 +149,6 @@ def playlist_info(channel_id):
 
 
 
-# In[8]:
-
 # creat mongo db
 #upload in mongodb
 mongodb_url = "mongodb://localhost:27017/"
@@ -185,9 +159,7 @@ collection_name = "youtube_collection"
 collection = db[collection_name]
 
 
-# In[9]:
-
-
+## main function to call all function used to upload in mongodb
 def channel_details(channel_id):
     ch_details =channel_info(channel_id)
     vid_details =videoid_details(channel_id)
@@ -203,18 +175,6 @@ def channel_details(channel_id):
         
     
 
-
-# In[10]:
-
-
-#'Science With Sam : 'UChGd9JY4yMegY6PxqpBjpRA'
-#infobells - Tamil :"UCHcn4Ux-sO9nzNu7rDsoQLg"
-#"ChuChuTV Tamil" :"UClPHwLcsE9zQcIqNRc7VLHw"
-
-
-# In[11]:
-
-
 ## tables creation for channels,video,playlist 
 def channels_table():
     mydb = psycopg2.connect(host = "localhost",
@@ -224,11 +184,11 @@ def channels_table():
                             port = "5432")
     cursor = mydb.cursor()
 
-    drop_query=''' drop table if exists channels'''
+    drop_query=''' drop table if exists channels'''  # drop table to delete old tabel and  add new data
     cursor.execute(drop_query)
     mydb.commit()
 
-    try:
+    try:    ## used to error clearing performance
 
         create_qyery ='''create table if not exists channels(channel_name varchar(100),
                                                             channel_id varchar(80) primary key,
@@ -236,7 +196,7 @@ def channels_table():
                                                             views bigint,
                                                             videos_count int,
                                                             channel_description text,
-                                                            playlist_id varchar(80))'''
+                                                            playlist_id varchar(80))'''   ##create new table
         cursor.execute(create_qyery)
 
         mydb.commit()
@@ -276,10 +236,7 @@ def channels_table():
         except:
             st.write("channels values already inserted")
 
-
-# In[12]:
-
-
+## playlist table
 def playlists_table():
     mydb = psycopg2.connect(host = "localhost",
                             user ="postgres",
@@ -344,10 +301,7 @@ def playlists_table():
 
 
 
-
-# In[13]:
-
-
+## videos table create,drop,insert data
 def videos_table():
 
     mydb = psycopg2.connect(host = "localhost",
@@ -443,7 +397,7 @@ def videos_table():
 
 
 
-# In[14]:
+# create comments table and insert data
 
 
 def comments_table():
@@ -510,7 +464,7 @@ def comments_table():
 
 
 
-# In[15]:
+# main tables function to call all table function
 
 
 def tables():
@@ -523,7 +477,7 @@ def tables():
     
 
 
-# In[16]:
+# display the table
 
 
 def show_channels_table():
@@ -536,8 +490,6 @@ def show_channels_table():
     channels_tables= st.dataframe(ch_list)
     return channels_tables
 
-
-# In[17]:
 
 
 def show_playlist_table():
@@ -553,9 +505,6 @@ def show_playlist_table():
     return play_table
 
 
-# In[18]:
-
-
 def show_video_table(): 
     
     video_list=[]
@@ -566,9 +515,6 @@ def show_video_table():
             video_list.append(video_data["video_information"][i])
     video_table= st.dataframe(video_data["video_information"])
     return video_table
-
-
-# In[19]:
 
 
 def show_comment_table():
@@ -600,7 +546,6 @@ channels = channel_id.split(',')
 channels = [ch.strip() for ch in channels if ch]
 
 
-# In[21]:
 
 
 if st.button("Collect and Store data"):
@@ -636,8 +581,6 @@ elif show_table == ":blue[comments]":
     show_comment_table()
 
 
-# In[24]:
-
 
 #SQL connection
 mydb = psycopg2.connect(host="localhost",
@@ -661,7 +604,7 @@ question = st.selectbox('Please Select Your Question',
                          '10. videos with highest number of comments'))
 
 
-# In[25]:
+# sql queries and answers
 
 
 if question == '1. All the videos and the Channel Name':
@@ -744,22 +687,3 @@ elif question == '10. videos with highest number of comments':
     mydb.commit()
     t10=cursor.fetchall()
     st.write(pd.DataFrame(t10, columns=['Video Title', 'Channel Name', 'NO Of Comments']))
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
