@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
+
 # import tools
 
 from googleapiclient.discovery import build  #built function used to create a client object ,Simplifies Authentication
