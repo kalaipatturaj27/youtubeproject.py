@@ -607,14 +607,14 @@ question = st.selectbox('Please Select Your Question',
 
 
 if question == '1. All the videos and the Channel Name':
-    query1 = "select video_title as Video Title,channel_name as Channel Name from videos;"
+    query1 = "select video_title as VideoTitle,channel_name as ChannelName from videos;"
     cursor.execute(query1)
     mydb.commit()
     t1=cursor.fetchall()
     st.write(pd.DataFrame(t1, columns=["Video Title","Channel Name"]))
 
 elif question == '2. Channels with most number of videos':
-    query2 = "select channel_name as Channel Name,videos_count as NO_Videos from channels order by videos_count desc;"
+    query2 = "select channel_name as ChannelName,videos_count as NO_Videos from channels order by videos_count desc;"
     cursor.execute(query2)
     mydb.commit()
     t2=cursor.fetchall()
